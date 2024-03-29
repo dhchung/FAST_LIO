@@ -162,6 +162,20 @@ inline void dump_lio_state_to_log(FILE *fp)
     fflush(fp);
 }
 
+inline void dump_lio_state_to_log_hilti(FILE *fp_hilti)  
+{
+    V3D rot_ang(Log(state_point.rot.toRotationMatrix()));
+
+    Eigen::Quaterniond Q(state_point.rot.toRotationMatrix());
+    fprintf(fp_hilti, "%0.9f ", Measures.lidar_beg_time);
+    fprintf(fp_hilti, "%0.9f %0.9f %0.9f ", state_point.pos.x(), state_point.pos.y(), state_point.pos.z());
+    fprintf(fp_hilti, "%0.9f %0.9f %0.9f %0.9f", Q.x(), Q.y(), Q.z(), Q.w());
+    fprintf(fp_hilti, "\n");
+    fflush(fp_hilti);
+}
+
+
+
 void pointBodyToWorld_ikfom(PointType const * const pi, PointType * const po, state_ikfom &s)
 {
     V3D p_body(pi->x, pi->y, pi->z);
@@ -825,6 +839,12 @@ int main(int argc, char** argv)
     string pos_log_dir = root_dir + "/Log/pos_log.txt";
     fp = fopen(pos_log_dir.c_str(),"w");
 
+
+    FILE *fp_hilti;
+    string pos_log_dir_hilti = root_dir + "/Log/hilti_poses.txt";
+    fp_hilti = fopen(pos_log_dir_hilti.c_str(),"w");
+
+
     ofstream fout_pre, fout_out, fout_dbg;
     fout_pre.open(DEBUG_FILE_DIR("mat_pre.txt"),ios::out);
     fout_out.open(DEBUG_FILE_DIR("mat_out.txt"),ios::out);
@@ -974,7 +994,7 @@ int main(int argc, char** argv)
             if (scan_pub_en || pcd_save_en)      publish_frame_world(pubLaserCloudFull);
             if (scan_pub_en && scan_body_pub_en) publish_frame_body(pubLaserCloudFull_body);
             // publish_effect_world(pubLaserCloudEffect);
-            // publish_map(pubLaserCloudMap);
+            publish_map(pubLaserCloudMap);
 
             /*** Debug variables ***/
             if (runtime_pos_log)
@@ -1004,12 +1024,17 @@ int main(int argc, char** argv)
                 fout_out << setw(20) << Measures.lidar_beg_time - first_lidar_time << " " << euler_cur.transpose() << " " << state_point.pos.transpose()<< " " << ext_euler.transpose() << " "<<state_point.offset_T_L_I.transpose()<<" "<< state_point.vel.transpose() \
                 <<" "<<state_point.bg.transpose()<<" "<<state_point.ba.transpose()<<" "<<state_point.grav<<" "<<feats_undistort->points.size()<<endl;
                 dump_lio_state_to_log(fp);
+                dump_lio_state_to_log_hilti(fp_hilti);
             }
         }
 
         status = ros::ok();
         rate.sleep();
     }
+
+    fclose(fp);
+    fclose(fp_hilti);
+
 
     /**************** save map ****************/
     /* 1. make sure you have enough memories

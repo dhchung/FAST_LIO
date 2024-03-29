@@ -59,7 +59,7 @@ namespace ouster_ros {
       uint32_t t;
       uint16_t reflectivity;
       uint8_t  ring;
-      uint16_t ambient;
+      // uint16_t ambient;
       uint32_t range;
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -75,7 +75,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(ouster_ros::Point,
     (std::uint32_t, t, t)
     (std::uint16_t, reflectivity, reflectivity)
     (std::uint8_t, ring, ring)
-    (std::uint16_t, ambient, ambient)
+    // (std::uint16_t, ambient, ambient)
     (std::uint32_t, range, range)
 )
 

@@ -1,16 +1,19 @@
 common:
-    imu_topic: "/alphasense/imu"
-    lid_topic: "/hesai/pandar"
+
+    # imu_topic: "/alphasense/imu"
+    # lid_topic: "/hesai/pandar"
+    imu_topic:  "/os_cloud_node/imu"
+    lid_topic:  "/os_cloud_node/points"
 
     time_sync_en: false         # ONLY turn on when external time synchronization is really not possible
     time_offset_lidar_to_imu: 0.0 # Time offset between lidar and IMU calibrated by other algorithms, e.g. LI-Init (can be found in README).
                                   # This param will take effect no matter what time_sync_en is. So if the time offset is not known exactly, please set as 0.0
     
 preprocess:
-    lidar_type: 4                # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR, 
-    scan_line: 32
-    timestamp_unit: 0                 # 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
-    blind: 0.8
+    lidar_type: 3                # 1 for Livox serials LiDAR, 2 for Velodyne LiDAR, 3 for ouster LiDAR, 
+    scan_line: 128
+    timestamp_unit: 3                 # 0-second, 1-milisecond, 2-microsecond, 3-nanosecond.
+    blind: 1
 
 mapping:
     acc_cov: 0.1
@@ -20,16 +23,15 @@ mapping:
     fov_degree:    360
     det_range:     150.0
     extrinsic_est_en:  false      # true: enable the online estimation of IMU-LiDAR extrinsic
-    extrinsic_T: [-0.00855, -0.001, 0.055]
-    extrinsic_R: [0, -1, 0,
-                  -1, 0, 0,
-                  0, 0, -1]
-
+    extrinsic_T: [-0.014, 0.012, 0.015]
+    extrinsic_R: [1, 0, 0,
+                   0, 1, 0,
+                   0, 0, 1]
 
 publish:
     path_en:  true
     scan_publish_en:  true       # false: close all the point cloud output
-    dense_publish_en: true       # false: low down the points number in a global-frame point clouds scan.
+    dense_publish_en: false       # false: low down the points number in a global-frame point clouds scan.
     scan_bodyframe_pub_en: true  # true: output the point cloud scans in IMU-body-frame
 
 pcd_save:
